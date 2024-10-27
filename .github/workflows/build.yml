@@ -9,7 +9,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
+    
     - name: Set up Git
       run: |
         git config --global user.name "github-actions[bot]"
@@ -20,7 +20,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '20'
-    
+
     - name: Set up environment
       run: |
         sudo apt-get update
@@ -28,30 +28,31 @@ jobs:
         
     - name: Download and configure Atom-X Clang
       run: |
-        git clone https://gitlab.com/ElectroPerf/atom-x-clang.git
-        cd atom-x-clang
-        export CLANG_PATH=$PWD
+        wget https://gitlab.com/ElectroPerf/atom-x-clang/-/archive/main/atom-x-clang-main.zip
+        unzip atom-x-clang-main.zip
+        mv atom-x-clang-main atom-x-clang
+        export CLANG_PATH=$PWD/atom-x-clang
         echo "export PATH=\$PATH:$CLANG_PATH/bin" >> $GITHUB_ENV
 
     - name: Clean up existing directories
       run: |
         rm -rf kernel
         rm -rf AnyKernel3
-    
+
     - name: Build Kernel
       run: |
         git clone https://github.com/Atom-X-Devs/android_kernel_xiaomi_sm7325.git kernel || exit 1
         cd kernel
-        make ARCH=arm64 defconfig || exit 1
-        make -j$(nproc --all) ARCH=arm64 CC=clang CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-android- || exit 1
-    
+        make ARCH=arm64 CC=$CLANG_PATH/bin/clang CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-android- defconfig || exit 1
+        make -j$(nproc --all) ARCH=arm64 CC=$CLANG_PATH/bin/clang CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-android- || exit 1
+
     - name: Package Kernel
       run: |
         git clone https://github.com/osm0sis/AnyKernel3.git || exit 1
         cp arch/arm64/boot/Image.gz-dtb AnyKernel3/ || exit 1
         cd AnyKernel3 || exit 1
         zip -r9 ../kernel.zip * || exit 1
-    
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
