@@ -1,0 +1,36 @@
+name: Build Kernel
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    
+    - name: Set up environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y make gcc bc bison flex libssl-dev libncurses5-dev
+    
+    - name: Build Kernel
+      run: |
+        git clone https://github.com/Atom-X-Devs/android_kernel_xiaomi_sm7325.git kernel
+        cd kernel
+        make ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- defconfig
+        make -j$(nproc --all) ARCH=arm64 CROSS_COMPILE=aarch64-linux-android-
+    
+    - name: Package Kernel
+      run: |
+        git clone https://github.com/osm0sis/AnyKernel3.git
+        cp arch/arm64/boot/Image.gz-dtb AnyKernel3/
+        cd AnyKernel3
+        zip -r9 ../kernel.zip *
+    
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: kernel
+        path: kernel.zip
