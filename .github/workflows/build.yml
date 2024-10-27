@@ -24,14 +24,14 @@ jobs:
     - name: Set up environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y make gcc bc bison flex libssl-dev libncurses5-dev wget
+        sudo apt-get install -y make gcc bc bison flex libssl-dev libncurses5-dev wget unzip
         
-    - name: Download and install Android NDK
+    - name: Download and configure Atom-X Clang
       run: |
-        wget https://dl.google.com/android/repository/android-ndk-r23b-linux.zip
-        unzip android-ndk-r23b-linux.zip
-        export ANDROID_NDK_HOME=$PWD/android-ndk-r23b
-        echo "export PATH=\$PATH:$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin" >> $GITHUB_ENV
+        wget https://gitlab.com/ElectroPerf/atom-x-clang/-/archive/main/atom-x-clang-main.zip
+        unzip atom-x-clang-main.zip
+        export CLANG_PATH=$PWD/atom-x-clang-main
+        echo "export PATH=\$PATH:$CLANG_PATH/bin" >> $GITHUB_ENV
 
     - name: Clean up existing directories
       run: |
@@ -44,8 +44,8 @@ jobs:
         git config --global --list
         git clone https://github.com/Atom-X-Devs/android_kernel_xiaomi_sm7325.git kernel || exit 1
         cd kernel
-        make ARCH=arm64 CROSS_COMPILE=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android- defconfig || exit 1
-        make -j$(nproc --all) ARCH=arm64 CROSS_COMPILE=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android- || exit 1
+        make ARCH=arm64 defconfig || exit 1
+        make -j$(nproc --all) ARCH=arm64 CC=clang CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-android- || exit 1
     
     - name: Package Kernel
       run: |
