@@ -28,9 +28,9 @@ jobs:
         
     - name: Download and configure Atom-X Clang
       run: |
-        wget https://gitlab.com/ElectroPerf/atom-x-clang/-/archive/main/atom-x-clang-main.zip
-        unzip atom-x-clang-main.zip
-        export CLANG_PATH=$PWD/atom-x-clang-main
+        git clone https://gitlab.com/ElectroPerf/atom-x-clang.git
+        cd atom-x-clang
+        export CLANG_PATH=$PWD
         echo "export PATH=\$PATH:$CLANG_PATH/bin" >> $GITHUB_ENV
 
     - name: Clean up existing directories
@@ -38,10 +38,8 @@ jobs:
         rm -rf kernel
         rm -rf AnyKernel3
     
-    - name: Debugging
+    - name: Build Kernel
       run: |
-        echo $GITHUB_ACTOR
-        git config --global --list
         git clone https://github.com/Atom-X-Devs/android_kernel_xiaomi_sm7325.git kernel || exit 1
         cd kernel
         make ARCH=arm64 defconfig || exit 1
