@@ -25,6 +25,11 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y make gcc bc bison flex libssl-dev libncurses5-dev
+
+    - name: Clean up existing directories
+      run: |
+        rm -rf kernel
+        rm -rf AnyKernel3
     
     - name: Debugging
       run: |
