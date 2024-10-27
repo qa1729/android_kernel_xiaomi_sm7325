@@ -26,6 +26,11 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y make gcc bc bison flex libssl-dev libncurses5-dev
 
+    - name: Set up Android NDK
+      run: |
+        echo "export ANDROID_NDK_HOME=$HOME/android-ndk-r23" >> $GITHUB_ENV
+        echo "export PATH=$PATH:$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin" >> $GITHUB_ENV
+
     - name: Clean up existing directories
       run: |
         rm -rf kernel
