@@ -24,14 +24,13 @@ jobs:
     - name: Set up environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y make gcc bc bison flex libssl-dev libncurses5-dev wget unzip
+        sudo apt-get install -y make gcc bc bison flex libssl-dev libncurses5-dev wget
         
     - name: Download and configure Atom-X Clang
       run: |
-        wget https://gitlab.com/ElectroPerf/atom-x-clang/-/archive/main/atom-x-clang-main.zip
-        unzip atom-x-clang-main.zip
-        mv atom-x-clang-main atom-x-clang
-        export CLANG_PATH=$PWD/atom-x-clang
+        git clone https://gitlab.com/ElectroPerf/atom-x-clang.git
+        cd atom-x-clang
+        export CLANG_PATH=$PWD
         echo "export PATH=\$PATH:$CLANG_PATH/bin" >> $GITHUB_ENV
 
     - name: Clean up existing directories
@@ -49,12 +48,3 @@ jobs:
     - name: Package Kernel
       run: |
         git clone https://github.com/osm0sis/AnyKernel3.git || exit 1
-        cp arch/arm64/boot/Image.gz-dtb AnyKernel3/ || exit 1
-        cd AnyKernel3 || exit 1
-        zip -r9 ../kernel.zip * || exit 1
-
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: kernel
-        path: kernel.zip
