@@ -1,4 +1,4 @@
-lname: Build Kernel
+name: Build Kernel
 
 on: [push, pull_request]
 
