@@ -20,11 +20,11 @@ jobs:
         /bin/bash -c "
         apt-get update && \
         apt-get install -y build-essential bc bison ccache clang cpio cmake flex git libelf-dev lld llvm ninja-build openssl python3 u-boot-tools && \
-        rm -rf atom-x-clang && \
         git clone https://gitlab.com/ElectroPerf/atom-x-clang.git && \
         cd atom-x-clang && \
-        ./build-llvm.py && \
-        export TC_PATH=\$PWD/install && \
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS='clang;lld' -B build -S llvm && \
+        cmake --build build && \
+        export TC_PATH=\$PWD/build && \
         echo 'export PATH=\$PATH:\$TC_PATH/bin' >> /workspace/.bashrc && \
         source /workspace/.bashrc && \
         cd /workspace && \
