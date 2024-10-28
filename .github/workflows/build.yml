@@ -1,31 +1,28 @@
 name: Build Kernel
-
 on: [push, pull_request]
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    
+      
     - name: Set up Git
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
+        
     - name: Set up Java
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '20'
-
+        
     - name: Set up environment
       run: |
         sudo apt-get update
         sudo apt-get install -y make gcc bc bison flex libssl-dev libncurses5-dev wget unzip
-
+        
     - name: Clone Atom-X TC Build Scripts
       run: |
         git clone https://github.com/Atom-X-Devs/scripts.git
@@ -33,26 +30,26 @@ jobs:
         ./build-llvm.py
         export TC_PATH=$PWD/install
         echo "export PATH=\$PATH:$TC_PATH/bin" >> $GITHUB_ENV
-
+        
     - name: Clean up existing directories
       run: |
         rm -rf kernel
         rm -rf AnyKernel3
-
+        
     - name: Build Kernel
       run: |
         git clone https://github.com/Atom-X-Devs/android_kernel_xiaomi_sm7325.git kernel
         cd kernel
         make ARCH=arm64 CC=$TC_PATH/bin/clang CROSS_COMPILE=$TC_PATH/bin/aarch64-linux-android- defconfig
         make -j$(nproc --all) ARCH=arm64 CC=$TC_PATH/bin/clang CROSS_COMPILE=$TC_PATH/bin/aarch64-linux-android-
-
+        
     - name: Package Kernel
       run: |
         git clone https://github.com/osm0sis/AnyKernel3.git
         cp arch/arm64/boot/Image.gz-dtb AnyKernel3/
         cd AnyKernel3
         zip -r9 ../kernel.zip *
-
+        
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
