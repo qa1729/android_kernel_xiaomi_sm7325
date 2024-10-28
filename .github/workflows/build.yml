@@ -23,10 +23,11 @@ jobs:
         rm -rf atom-x-clang && \
         git clone https://gitlab.com/ElectroPerf/atom-x-clang.git && \
         cd atom-x-clang && \
-        ls -al && \
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS='clang;lld' -B build -S llvm && \
-        cmake --build build && \
-        export TC_PATH=\$PWD/build && \
+        git clone https://github.com/llvm/llvm-project.git && \
+        mkdir build && cd build && \
+        cmake -G Ninja ../llvm-project/llvm -DLLVM_ENABLE_PROJECTS='clang;lld' -DCMAKE_BUILD_TYPE=Release && \
+        ninja && \
+        export TC_PATH=\$PWD && \
         echo 'export PATH=\$PATH:\$TC_PATH/bin' >> /workspace/.bashrc && \
         source /workspace/.bashrc && \
         cd /workspace && \
