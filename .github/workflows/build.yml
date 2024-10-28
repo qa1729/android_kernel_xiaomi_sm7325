@@ -15,8 +15,8 @@ jobs:
 
     - name: Set up Docker
       run: |
-        docker pull atomxorg/archlinux:latest
-        docker run --rm -v $PWD:/workspace -w /workspace atomxorg/archlinux:latest \
+        docker pull archlinux:latest
+        docker run --rm -v $PWD:/workspace -w /workspace archlinux:latest \
         /bin/bash -c "
         pacman -Sy --noconfirm base-devel bc bison ccache clang cpio cmake flex git libelf lld llvm ninja openssl python3 uboot-tools && \
         rm -rf scripts && \
