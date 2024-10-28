@@ -18,6 +18,7 @@ jobs:
         docker pull atomxorg/ubuntu:latest
         docker run --rm -v $PWD:/workspace -w /workspace atomxorg/ubuntu:latest \
         /bin/bash -c "
+        rm -rf scripts && \
         git clone https://github.com/Atom-X-Devs/scripts.git && \
         cd scripts && \
         ./build-llvm.py && \
