@@ -15,14 +15,14 @@ jobs:
 
     - name: Set up Docker
       run: |
-        docker pull archlinux:latest
-        docker run --rm -v $PWD:/workspace -w /workspace archlinux:latest \
+        docker pull atomxorg/ubuntu:latest
+        docker run --rm -v $PWD:/workspace -w /workspace atomxorg/ubuntu:latest \
         /bin/bash -c "
-        pacman -Sy --noconfirm base-devel bc bison ccache clang cpio cmake flex git libelf lld llvm ninja openssl python3 uboot-tools && \
+        apt-get update && \
+        apt-get install -y base-devel bc bison ccache clang cpio cmake flex git libelf-dev lld llvm ninja-build openssl python3 uboot-tools && \
         rm -rf scripts && \
-        git clone https://github.com/Atom-X-Devs/scripts.git && \
-        cd scripts && \
         git clone https://gitlab.com/ElectroPerf/atom-x-clang.git && \
+        cd atom-x-clang && \
         ./build-llvm.py && \
         export TC_PATH=\$PWD/install && \
         echo 'export PATH=\$PATH:\$TC_PATH/bin' >> /workspace/.bashrc && \
