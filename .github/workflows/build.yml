@@ -9,7 +9,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
+    
     - name: Set up Git
       run: |
         git config --global user.name "github-actions[bot]"
@@ -26,12 +26,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y make gcc bc bison flex libssl-dev libncurses5-dev wget unzip
 
-    - name: Clone and configure Atom-X Clang
+    - name: Clone Atom-X TC Build Scripts
       run: |
-        git clone https://gitlab.com/ElectroPerf/atom-x-clang.git
-        cd atom-x-clang
-        export CLANG_PATH=$PWD
-        echo "export PATH=\$PATH:$CLANG_PATH/bin" >> $GITHUB_ENV
+        git clone https://github.com/Atom-X-Devs/scripts.git
+        cd scripts
+        ./build-llvm.py
+        export TC_PATH=$PWD/install
+        echo "export PATH=\$PATH:$TC_PATH/bin" >> $GITHUB_ENV
 
     - name: Clean up existing directories
       run: |
@@ -42,8 +43,8 @@ jobs:
       run: |
         git clone https://github.com/Atom-X-Devs/android_kernel_xiaomi_sm7325.git kernel
         cd kernel
-        make ARCH=arm64 CC=$CLANG_PATH/bin/clang CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-android- defconfig
-        make -j$(nproc --all) ARCH=arm64 CC=$CLANG_PATH/bin/clang CROSS_COMPILE=$CLANG_PATH/bin/aarch64-linux-android-
+        make ARCH=arm64 CC=$TC_PATH/bin/clang CROSS_COMPILE=$TC_PATH/bin/aarch64-linux-android- defconfig
+        make -j$(nproc --all) ARCH=arm64 CC=$TC_PATH/bin/clang CROSS_COMPILE=$TC_PATH/bin/aarch64-linux-android-
 
     - name: Package Kernel
       run: |
