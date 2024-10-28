@@ -15,18 +15,14 @@ jobs:
 
     - name: Set up Docker
       run: |
-        docker pull atomxorg/ubuntu:latest
-        docker run --rm -v $PWD:/workspace -w /workspace atomxorg/ubuntu:latest \
+        docker pull atomxorg/archlinux:latest
+        docker run --rm -v $PWD:/workspace -w /workspace atomxorg/archlinux:latest \
         /bin/bash -c "
+        pacman -Sy --noconfirm base-devel bc bison ccache clang cpio cmake flex git libelf lld llvm ninja openssl python3 uboot-tools && \
         rm -rf scripts && \
         git clone https://github.com/Atom-X-Devs/scripts.git && \
         cd scripts && \
-        ls -al && \
         git clone https://gitlab.com/ElectroPerf/atom-x-clang.git && \
-        ls -al && \
-        cd atom-x-clang && \
-        cd .. && \
-        ls -al && \
         ./build-llvm.py && \
         export TC_PATH=\$PWD/install && \
         echo 'export PATH=\$PATH:\$TC_PATH/bin' >> /workspace/.bashrc && \
@@ -36,4 +32,15 @@ jobs:
         git clone https://github.com/qa1729/android_kernel_xiaomi_sm7325.git kernel && \
         cd kernel && \
         make ARCH=arm64 CC=\$TC_PATH/bin/clang CROSS_COMPILE=\$TC_PATH/bin/aarch64-linux-android- defconfig && \
-        make -j\$(nproc --all) ARCH=arm64 CC=\$TC_PATH/bin/clang CROSS
+        make -j\$(nproc --all) ARCH=arm64 CC=\$TC_PATH/bin/clang CROSS_COMPILE=\$TC_PATH/bin/aarch64-linux-android- && \
+        git clone https://github.com/osm0sis/AnyKernel3.git && \
+        cp arch/arm64/boot/Image.gz-dtb AnyKernel3/ && \
+        cd AnyKernel3 && \
+        zip -r9 /workspace/kernel.zip *
+        "
+        
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: kernel
+        path: kernel.zip
