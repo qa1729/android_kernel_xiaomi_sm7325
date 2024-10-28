@@ -21,6 +21,7 @@ jobs:
         rm -rf scripts && \
         git clone https://github.com/Atom-X-Devs/scripts.git && \
         cd scripts && \
+        ls -al && \
         ./build-llvm.py && \
         export TC_PATH=\$PWD/install && \
         echo 'export PATH=\$PATH:\$TC_PATH/bin' >> /workspace/.bashrc && \
