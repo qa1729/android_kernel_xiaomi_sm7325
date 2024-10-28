@@ -24,6 +24,9 @@ jobs:
         ls -al && \
         git clone https://gitlab.com/ElectroPerf/atom-x-clang.git && \
         ls -al && \
+        cd atom-x-clang && \
+        cd .. && \
+        ls -al && \
         ./build-llvm.py && \
         export TC_PATH=\$PWD/install && \
         echo 'export PATH=\$PATH:\$TC_PATH/bin' >> /workspace/.bashrc && \
@@ -33,15 +36,4 @@ jobs:
         git clone https://github.com/qa1729/android_kernel_xiaomi_sm7325.git kernel && \
         cd kernel && \
         make ARCH=arm64 CC=\$TC_PATH/bin/clang CROSS_COMPILE=\$TC_PATH/bin/aarch64-linux-android- defconfig && \
-        make -j\$(nproc --all) ARCH=arm64 CC=\$TC_PATH/bin/clang CROSS_COMPILE=\$TC_PATH/bin/aarch64-linux-android- && \
-        git clone https://github.com/osm0sis/AnyKernel3.git && \
-        cp arch/arm64/boot/Image.gz-dtb AnyKernel3/ && \
-        cd AnyKernel3 && \
-        zip -r9 /workspace/kernel.zip *
-        "
-        
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: kernel
-        path: kernel.zip
+        make -j\$(nproc --all) ARCH=arm64 CC=\$TC_PATH/bin/clang CROSS
