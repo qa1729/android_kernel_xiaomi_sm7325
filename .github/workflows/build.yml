@@ -1,7 +1,7 @@
-name: Build Kernel
+name: List Files
 on: [push, pull_request]
 jobs:
-  build:
+  list_files:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,28 +19,8 @@ jobs:
         docker run --rm -v $PWD:/workspace -w /workspace atomxorg/ubuntu:latest \
         /bin/bash -c "
         apt-get update && \
-        apt-get install -y build-essential bc bison ccache clang cpio cmake flex git libelf-dev lld llvm ninja-build openssl python3 u-boot-tools && \
+        apt-get install -y git && \
         git clone https://gitlab.com/ElectroPerf/atom-x-clang.git && \
         cd atom-x-clang && \
-        mkdir build && cd build && \
-        cmake -G Ninja ../llvm -DLLVM_ENABLE_PROJECTS='clang;lld' -DCMAKE_BUILD_TYPE=Release && \
-        ninja && \
-        export TC_PATH=\$PWD && \
-        echo 'export PATH=\$PATH:\$TC_PATH/bin' >> /workspace/.bashrc && \
-        source /workspace/.bashrc && \
-        cd /workspace && \
-        git clone https://github.com/qa1729/android_kernel_xiaomi_sm7325.git kernel && \
-        cd kernel && \
-        make ARCH=arm64 CC=\$TC_PATH/bin/clang CROSS_COMPILE=\$TC_PATH/bin/aarch64-linux-android- defconfig && \
-        make -j\$(nproc --all) ARCH=arm64 CC=\$TC_PATH/bin/clang CROSS_COMPILE=\$TC_PATH/bin/aarch64-linux-android- && \
-        git clone https://github.com/osm0sis/AnyKernel3.git && \
-        cp arch/arm64/boot/Image.gz-dtb AnyKernel3/ && \
-        cd AnyKernel3 && \
-        zip -r9 /workspace/kernel.zip *
+        find .
         "
-        
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: kernel
-        path: kernel.zip
