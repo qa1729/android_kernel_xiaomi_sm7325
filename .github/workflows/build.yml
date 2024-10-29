@@ -7,7 +7,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+
     - name: Set up Git
       run: |
         git config --global user.name "github-actions[bot]"
@@ -20,10 +20,9 @@ jobs:
         /bin/bash -c "
         apt-get update && \
         apt-get install -y build-essential bc bison ccache clang cpio cmake flex git libelf-dev lld llvm ninja-build openssl python3 u-boot-tools && \
-        rm -rf atom-x-clang && \
         git clone https://gitlab.com/ElectroPerf/atom-x-clang.git && \
         cd atom-x-clang && \
-        git clone https://github.com/llvm/llvm-project.git && \
+        git pull https://github.com/llvm/llvm-project.git && \
         mkdir build && cd build && \
         cmake -G Ninja ../llvm-project/llvm -DLLVM_ENABLE_PROJECTS='clang;lld' -DCMAKE_BUILD_TYPE=Release && \
         ninja && \
@@ -31,7 +30,6 @@ jobs:
         echo 'export PATH=\$PATH:\$TC_PATH/bin' >> /workspace/.bashrc && \
         source /workspace/.bashrc && \
         cd /workspace && \
-        rm -rf kernel AnyKernel3 && \
         git clone https://github.com/qa1729/android_kernel_xiaomi_sm7325.git kernel && \
         cd kernel && \
         make ARCH=arm64 CC=\$TC_PATH/bin/clang CROSS_COMPILE=\$TC_PATH/bin/aarch64-linux-android- defconfig && \
@@ -41,7 +39,7 @@ jobs:
         cd AnyKernel3 && \
         zip -r9 /workspace/kernel.zip *
         "
-        
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
