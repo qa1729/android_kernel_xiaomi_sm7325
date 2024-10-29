@@ -22,9 +22,8 @@ jobs:
         apt-get install -y build-essential bc bison ccache clang cpio cmake flex git libelf-dev lld llvm ninja-build openssl python3 u-boot-tools && \
         git clone https://gitlab.com/ElectroPerf/atom-x-clang.git && \
         cd atom-x-clang && \
-        git pull https://github.com/llvm/llvm-project.git && \
         mkdir build && cd build && \
-        cmake -G Ninja ../llvm-project/llvm -DLLVM_ENABLE_PROJECTS='clang;lld' -DCMAKE_BUILD_TYPE=Release && \
+        cmake -G Ninja ../llvm -DLLVM_ENABLE_PROJECTS='clang;lld' -DCMAKE_BUILD_TYPE=Release && \
         ninja && \
         export TC_PATH=\$PWD && \
         echo 'export PATH=\$PATH:\$TC_PATH/bin' >> /workspace/.bashrc && \
@@ -39,7 +38,7 @@ jobs:
         cd AnyKernel3 && \
         zip -r9 /workspace/kernel.zip *
         "
-
+        
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
