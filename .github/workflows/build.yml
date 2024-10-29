@@ -43,13 +43,24 @@ jobs:
       - name: Configure Kernel
         run: |
           cd android_kernel_xiaomi_sm7325
-          make [defconfig]  # Replace [defconfig] with your actual defconfig name
+          if [ -f "kconfig" ]; then
+            cp kconfig .config  # Copy kconfig to .config
+          elif [ -f "Makefile" ]; then
+            make [defconfig]  # Replace [defconfig] with your actual defconfig
+          else
+            echo "No valid configuration file found!"
+            exit 1
+          fi
 
       - name: Build Kernel
         run: |
           cd android_kernel_xiaomi_sm7325
           export ARCH=arm64
-          export SUBARCH=arm64
+          export CLANG_TRIPLE=aarch64-linux-gnu-
+          export CROSS_COMPILE=aarch64-linux-androidkernel-
+          export CROSS_COMPILE_COMPAT=arm-linux-androideabi-
+          export LINUX_GCC_CROSS_COMPILE_PREBUILTS_BIN=prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin
+          export LINUX_GCC_CROSS_COMPILE_ARM32_PREBUILTS_BIN=prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/
           export CC=../atom-x-clang/bin/clang  # Adjust path if necessary
           make -j$(nproc) O=out
 
