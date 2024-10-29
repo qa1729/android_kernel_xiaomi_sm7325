@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build:
@@ -44,7 +43,7 @@ jobs:
           zip -r ../kernel.zip * 
 
       - name: Upload Kernel
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: kernel
           path: kernel.zip
