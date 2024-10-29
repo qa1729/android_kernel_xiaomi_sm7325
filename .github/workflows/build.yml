@@ -28,25 +28,25 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git wget curl clang flex bison libssl-dev libelf-dev
 
-      - name: Clone dependencies
+      - name: Clone AnyKernel3 and Atom-X dependencies
         run: |
-          if [ ! -d "scripts" ]; then
-            git clone https://github.com/Atom-X-Devs/scripts.git
-          fi
-          if [ ! -d "AnyKernel3" ]; then
-            git clone https://github.com/Atom-X-Devs/AnyKernel3.git
-          fi
-          if [ ! -d "atom-x-clang" ]; then
-            git clone https://gitlab.com/ElectroPerf/atom-x-clang.git
-          fi
+          git clone https://github.com/Atom-X-Devs/AnyKernel3.git
+          git clone https://github.com/Atom-X-Devs/scripts.git || echo "scripts already cloned"
+          git clone https://gitlab.com/ElectroPerf/atom-x-clang.git || echo "atom-x-clang already cloned"
 
       - name: Configure Kernel
         run: |
           cd android_kernel_xiaomi_sm7325
           if [ -f "kconfig" ]; then
-            cp kconfig .config  # Copy kconfig to .config
+            cp kconfig .config
           elif [ -f "Makefile" ]; then
-            make [defconfig]  # Replace [defconfig] with your actual defconfig
+            # Optionally copy a sample configuration if available
+            if [ -f "arch/arm64/configs/sample_defconfig" ]; then
+              cp arch/arm64/configs/sample_defconfig .config
+            else
+              echo "No valid configuration file found!"
+              exit 1
+            fi
           else
             echo "No valid configuration file found!"
             exit 1
@@ -61,7 +61,7 @@ jobs:
           export CROSS_COMPILE_COMPAT=arm-linux-androideabi-
           export LINUX_GCC_CROSS_COMPILE_PREBUILTS_BIN=prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin
           export LINUX_GCC_CROSS_COMPILE_ARM32_PREBUILTS_BIN=prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/
-          export CC=../atom-x-clang/bin/clang  # Adjust path if necessary
+          export CC=../atom-x-clang/bin/clang  # Ensure this path is correct
           make -j$(nproc) O=out
 
       - name: Package Kernel
