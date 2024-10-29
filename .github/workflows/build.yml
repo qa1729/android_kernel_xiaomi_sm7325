@@ -11,8 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout kernel repository
         uses: actions/checkout@v2
+        with:
+          repository: qa1729/android_kernel_xiaomi_sm7325
+          path: android_kernel_xiaomi_sm7325  # Checkout to a specific directory
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -42,12 +45,12 @@ jobs:
           cd android_kernel_xiaomi_sm7325
           export ARCH=arm64
           export SUBARCH=arm64
-          export CC=~/atom-x-clang/bin/clang
+          export CC=../atom-x-clang/bin/clang  # Adjust path if necessary
           make -j$(nproc) O=out [defconfig]
 
       - name: Package Kernel
         run: |
-          cd out
+          cd android_kernel_xiaomi_sm7325/out  # Ensure correct path to output
           zip -r ../kernel.zip * 
 
       - name: Upload Kernel
