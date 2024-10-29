@@ -1,0 +1,49 @@
+name: Kernel Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Install required packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git wget curl clang flex bison libssl-dev libelf-dev
+
+      - name: Clone dependencies
+        run: |
+          git clone https://github.com/Atom-X-Devs/scripts.git
+          git clone https://github.com/Atom-X-Devs/AnyKernel3.git
+          git clone https://gitlab.com/ElectroPerf/atom-x-clang.git
+
+      - name: Build Kernel
+        run: |
+          cd android_kernel_xiaomi_sm7325
+          export ARCH=arm64
+          export SUBARCH=arm64
+          export CC=~/atom-x-clang/bin/clang
+          make -j$(nproc) O=out [defconfig]
+
+      - name: Package Kernel
+        run: |
+          cd out
+          zip -r ../kernel.zip * 
+
+      - name: Upload Kernel
+        uses: actions/upload-artifact@v2
+        with:
+          name: kernel
+          path: kernel.zip
