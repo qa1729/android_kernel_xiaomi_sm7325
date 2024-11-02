@@ -19,7 +19,12 @@ jobs:
       run: |
         git clone --depth=1 https://gitlab.com/ElectroPerf/atom-x-clang.git
         export PATH="$(pwd)/atom-x-clang/bin:$PATH"
-
+    
+    - name: Set up GitHub Authentication
+      run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | git credential approve
+        git config --global credential.helper store
+    
     - name: Set up necessary repositories
       run: |
         git clone --depth=1 https://github.com/Atom-X-Devs/android_device_xiaomi_sm7325.git device/xiaomi/sm7325
