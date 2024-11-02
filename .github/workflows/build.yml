@@ -37,7 +37,7 @@ jobs:
         make O=$KBUILD_OUTPUT -j$(nproc)
     
     - name: Upload Kernel
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3   # Updated to the latest version
       with:
         name: kernel
         path: ${{ github.workspace }}/out/arch/arm64/boot/Image.gz-dtb
